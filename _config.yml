@@ -1,11 +1,11 @@
 # Basic
-title: Vno Jekyll
-subtitle: A blog-orientation theme for Jekyll
-welcome_message: <a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a>
-description: Vno Jekyll is a port of my Ghost theme vno.
-creator: <a href="http://onev.cat">@onevcat</a>
+title: 邱浩盛的博客
+subtitle: 悟以往之不谏，知来者之可追。
+# welcome_message: <a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a>
+description: 你好！我是一位 iOS 开发者，现居深圳。
+creator: <a href="https://github.com/charlesqiu">Charles.Qiu</a>
 
-url: "http://vno.onevcat.com"
+url: "https://charlesqiu.github.io"
 
 permalink: /:year/:month/:title/
 
@@ -13,7 +13,7 @@ permalink: /:year/:month/:title/
 highlighter: rouge
 
 # supported colors: blue, green, purple, red, orange or slate. If you need clear, leave it empty.
-cover_color: green
+cover_color: blue
 
 # The blog button should not be removed.
 blog_button:
