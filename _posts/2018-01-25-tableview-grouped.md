@@ -25,6 +25,7 @@ class TableViewController: UITableViewController {
 ```
 ![001](/assets/images/2018/20180125_002.jpeg)
 
+---
 
 #### **UITableViewHeader 的一些研究：**
   1. 若传入的 height == 0，则 height 被设置成默认值；
