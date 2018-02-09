@@ -18,11 +18,6 @@ tags: Xcode
       self.window?.rootViewController = XXXViewController()
       self.window?.makeKeyAndVisible()
 
-<<<<<<< HEAD
-=======
-      WXApi.registerApp(weiChatAppId)
-
->>>>>>> 25065b61fc3ed0ea3fc0e57300291b63d9cebf45
       return true
   }
 ```
