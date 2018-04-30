@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 2018-04-30-Run Script的两个技巧
+title: Run Script的两个技巧
 categories: iOS
 tags: Xcode
 ---
