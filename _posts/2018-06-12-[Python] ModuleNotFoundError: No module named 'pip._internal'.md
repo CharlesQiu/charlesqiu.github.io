@@ -14,3 +14,4 @@ ModuleNotFoundError: No module named 'pip._internal'
 1. sudo easy_install pip
 2. which pip3
 3. pip3 -V
+

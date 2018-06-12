@@ -18,11 +18,11 @@ buildNumber=$(($buildNumber + 1))
 
 2. 在 Run Script 增加以下语句
 
-   ```shell
+```shell
    appVersion=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$INFOPLIST_FILE")
    buildTime="$(date +%Y年%m月%d日%H:%M:%S) Version: $appVersion(build $buildNumber)"
    /usr/libexec/PlistBuddy -c "Set :BuildTimeString $buildTime" "$INFOPLIST_FILE"
-   ```
+```
 
    ​
 
