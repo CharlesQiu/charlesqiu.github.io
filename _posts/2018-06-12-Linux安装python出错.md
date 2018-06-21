@@ -1,6 +1,6 @@
 ---
 layout: post
-Title:Linux安装python出错
+title: Linux安装python出错
 categories: Python
 tags: pip
 ---
