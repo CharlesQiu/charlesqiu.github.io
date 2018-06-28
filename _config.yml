@@ -19,9 +19,10 @@ email: qhs@outlook.com
 description: 你好！我叫邱浩盛，是一位iOS开发者，现居深圳。
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://charlesqiu.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-# twitter_username: jekyllrb
-github_username:  CharlesQiu
+github_username: CharlesQiu
+copyright: 此网站所有代码和文章都由Charles.Qiu维护，除了与个人资料相关的内容之外，您可以随意转发，请保留“Charles.Qiu”的署名。
 date_format: "%Y-%m-%d"
+google_analytics: UA-121539416-1
 
 # Build settings
 markdown: kramdown
