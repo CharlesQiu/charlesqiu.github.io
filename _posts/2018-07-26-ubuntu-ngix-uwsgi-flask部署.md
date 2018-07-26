@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 2018-07-26-ubuntu-ngix-uwsgi-flask部署
+title: ubuntu-ngix-uwsgi-flask 部署
 category: python
 tags: ubuntu,ngix,uwsgi,flask
 ---
