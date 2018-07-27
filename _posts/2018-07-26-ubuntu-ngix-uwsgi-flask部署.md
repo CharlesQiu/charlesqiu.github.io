@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ubuntu-ngix-uwsgi-flask 部署
+title: ubuntu-ngix-uwsgi-flask部署
 category: python
 tags: ubuntu,ngix,uwsgi,flask
 ---
@@ -56,94 +56,148 @@ tags: ubuntu,ngix,uwsgi,flask
 
 首先删除掉Nginx的默认配置文件：
 
-```
-sudo rm /etc/nginx/sites-enabled/default
-```
+
+    sudo rm /etc/nginx/sites-enabled/default
+
 
 **注意：如果你安装了其他版本的Nginx，默认配置文件可能在/etc/nginx/conf.d文件夹下。**
 
 创建一个我们应用使用的新配置文件**/var/www/zlktapp/zlktapp_nginx.conf**：
 
-```
-server {
-    listen      80;
-    server_name localhost;
-    charset     utf-8;
-    client_max_body_size 75M;
 
-    location / { try_files $uri @yourapplication; }
-    location @yourapplication {
-        include uwsgi_params;
-        uwsgi_pass unix:/var/www/zlktapp/zlktapp_uwsgi.sock;
+    server {
+        listen      80;
+        server_name localhost;
+        charset     utf-8;
+        client_max_body_size 75M;
+    
+        location / { try_files $uri @yourapplication; }
+        location @yourapplication {
+            include uwsgi_params;
+            uwsgi_pass unix:/var/www/zlktapp/zlktapp_uwsgi.sock;
+        }
     }
-}
-```
+
 
 将刚建立的配置文件使用符号链接到Nginx配置文件文件夹中，重启Nginx：
 
-```
-sudo ln -s /var/www/demoapp/demoapp_nginx.conf /etc/nginx/conf.d/
-sudo /etc/init.d/nginx restart
-```
+    sudo ln -s /var/www/zlktapp/zlktapp_nginx.conf /etc/nginx/conf.d/
+    sudo /etc/init.d/nginx restart
+
 此时，访问服务器会出现 `502 Bad Gateway`错误，这是正常的。
 
 它代表Nginx已经使用了我们新创建的配置文件，但在链接到我们的Python应用网关uWSGI时遇到了问题。到uWSGI的链接在Nginx配置文件的第10行定义：
 
-```bash
-uwsgi_pass unix:/var/www/demoapp/demoapp_uwsgi.sock;
-```
+	uwsgi_pass unix:/var/www/zlktapp/zlktapp_uwsgi.sock;
 
-这代表Nginx和uWSGI之间的链接是通过一个socket文件，这个文件位于*/var/www/demoapp/demoapp_uwsgi.sock*。因为我们还没有配置uWSGI，所以这个文件还不存在，因此Nginx返回“bad gateway”错误，让我们马上修正它吧。
+这代表Nginx和uWSGI之间的链接是通过一个socket文件，这个文件位于*/var/www/zlktapp/zlktapp_uwsgi.sock*。因为我们还没有配置uWSGI，所以这个文件还不存在，因此Nginx返回“bad gateway”错误，让我们马上修正它吧。
 
 ---
 
 ### uWSGI
 
 1. 创建一个新的uWSGI配置文件**/var/www/zlktapp/zlktapp_uwsgi.ini**：
+  ```
+   [uwsgi]
+   #application's base folder
+   base = /var/www/zlktapp/zlktqa
+  
+   #python module to import
+   app = zlktqa
+   module = %(app)
+   
+   home = /var/www/zlktapp/venv
+   pythonpath = %(base)
+   
+   #socket file's location
+   socket = /var/www/zlktapp/%n.sock
+   
+   #permissions for the socket file
+   chmod-socket    = 666
+   
+   #the variable that holds a flask application inside the module imported at line #6
+   callable = app
+   
+   #location of log files
+   logto = /var/log/uwsgi/%n.log
+  ```
 
-```shell
-[uwsgi]
-#application's base folder
-base = /var/www/zlktapp/zlktqa
-
-#python module to import
-app = zlktqa
-module = %(app)
-
-home = /var/www/zlktapp/venv
-pythonpath = %(base)
-
-#socket file's location
-socket = /var/www/zlktapp/%n.sock
-
-#permissions for the socket file
-chmod-socket    = 666
-
-#the variable that holds a flask application inside the module imported at line #6
-callable = app
-
-#location of log files
-logto = /var/log/uwsgi/%n.log
-```
-
-创建一个新文件夹存放uWSGI日志，更改文件夹的所有权：
-
-```shell
-sudo mkdir -p /var/log/uwsgi
-sudo chown -R ubuntu:ubuntu /var/log/uwsgi
-```
-
-2. 执行uWSGI，用新创建的配置文件作为参数：
+  创建一个新文件夹存放uWSGI日志，更改文件夹的所有权：
 
 ```
-uwsgi --ini /var/www/zlktapp/zlktapp_uwsgi.ini
+   sudo mkdir -p /var/log/uwsgi
+   sudo chown -R ubuntu:ubuntu /var/log/uwsgi
+```
+
+执行uWSGI，用新创建的配置文件作为参数：
+
+```
+   uwsgi --ini /var/www/zlktapp/zlktapp_uwsgi.ini
 ```
 
 我们现在基本完成了，唯一剩下的事情是配置uWSGI在后台运行，这是uWSGI Emperor的职责。
 
 ---
+### uWSGI Emperor(Ubuntu 16.04及以后)
 
-### uWSGI Emperor
+当用指令` sudo service uwsgi start` 启动uwsgi时, 会出现:
+
+```
+Failed to start uwsgi.service: Unit uwsgi.service not found.
+```
+
+原因在于 Ubuntu 16 不能使用 `upstart`，用 systemd 创建 systemd 单元文件将允许 Ubuntu 的 init 系统自动启动 uWSGI 
+
+1. 将 emperor upstart 配置文件删除 
+   ```shell
+   sudo rm /etc/init/uwsgi.conf
+   ```
+
+2. 创建一个emperor systemd 配置文件 
+	```shell
+	sudo vi /etc/systemd/system/uwsgi.service
+	```
+   ```shell
+   [Unit]
+   Description=uWSGI Emperor service
+   After=syslog.target
+    
+   [Service]
+   ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/sites
+   Restart=always
+   KillSignal=SIGQUIT
+   Type=notify
+   StandardError=syslog
+   NotifyAccess=all
+    
+   [Install]
+   WantedBy=multi-user.target
+   
+   ```
+
+   由于上面配置文件 uwsgi 配置目录为 `/etc/uwsgi/sites`
+
+3. 将 uWSGI配置文件 `/var/www/zlktapp/zlktapp_uwsgi.ini` 软链接到 `/etc/uwsgi/sites/zlktapp_uwsgi.ini` ，文件名根据自己创建的命名:
+   ```shell
+   sudo ln -s /var/www/zlktapp/zlktapp_uwsgi.ini /etc/uwsgi/sites/zlktapp_uwsgi.ini
+   ```
+4. 更新，启动，重启后也能启动，键入以下命令
+	```
+	sudo systemctl daemon-reload
+	sudo systemctl start uwsgi
+	sudo systemctl enable uwsgi
+	```
+重启 nginx 
+	```
+sudo /etc/init.d/nginx restart
+	```
+5. 可能存在的问题要打开端口5000时，键入以下命令
+	```
+sudo ufw allow 5000
+	```
+
+---
+### uWSGI Emperor(Ubuntu 16.04之前版本)
 
 uWSGI Emperor 负责读取配置文件并且生成uWSGI进程来执行它们。创建一个初始配置来运行emperor - **/etc/init/uwsgi.conf**：
 
@@ -197,35 +251,35 @@ sudo start uwsgi
 
 如果出现错误的话，第一个检查的地方是日志文件。Nginx默认将错误信息写到**/var/log/nginx/errors.log**文件。
 
-我们已经配置了uWSGI emperor将日志写到**/var/log/uwsgi/emperor.log**。这个文件夹还包含着每个配置应用的单独日志。我们的例子是 - **/var/log/uwsgi/demoapp_uwsgi.log**。
+我们已经配置了uWSGI emperor将日志写到**/var/log/uwsgi/emperor.log**。这个文件夹还包含着每个配置应用的单独日志。我们的例子是 - **/var/log/uwsgi/zlktapp_uwsgi.log**。
 
 ---
 ### 静态文件
 
-如果你的应用提供静态文件的话，将下面的规则添加到**demoapp_nginx.conf**文件：
+如果你的应用提供静态文件的话，将下面的规则添加到**zlktapp_nginx.conf**文件：
 
-```
+```shell
 location /static {
-    root /var/www/demoapp/;
+    root /var/www/zlktapp/;
 }
 ```
 
-*上面配置的结果就是所有在***\*/var/www/demoapp/static**文件夹中的文件将由**提供**Nginx对外服务**
+*上面配置的结果就是所有在***\*/var/www/zlktapp/static**文件夹中的文件将由**提供**Nginx对外服务**
 
 ---
 
 ### 托管多个应用
 
-如果你想在一台服务器上托管多个Flask应用，为每个应用创建一个单独的文件夹，像我们前面所做的一样，创建Nginx及uWSGI配置文件到应用文件夹的符号链接。
+如果你想在一台服务器上托管多个Flask应用，为每个应用创建一个单独的文件夹，像我们前面所做的一样，创建Nginx 及 uWSGI 配置文件到应用文件夹的符号链接。
 
 ---
 ### 使用Distribute部署应用
 
 使用[distribute](https://pypi.python.org/pypi/distribute)部署Flask应用的话，首先，按照[Flask文档](http://flask.pocoo.org/docs/patterns/packages/#larger-applications)里的步骤将应用转化成package，然后复制distribute通用安装包到服务器上，使用虚拟环境中的Python来安装它。如下：
 
-```
+   ```shell
 python setup.py install
-```
+   ```
 
 最后且同样重要的是，uwsgi配置里应用属性的值要设置成包含Flask应用的包的名称。
 
@@ -233,3 +287,4 @@ python setup.py install
 
 *参考资料*:
 *[1]* *[在 Ubuntu 上使用 Nginx 部署 Flask 应用](https://www.oschina.net/translate/serving-flask-with-nginx-on-ubuntu)*
+*[2]* *[问题解决笔记 -- 在 Ubuntu 16 上使用 Nginx 部署 Flask 应用](https://blog.csdn.net/qq_17121501/article/details/70833659)*
