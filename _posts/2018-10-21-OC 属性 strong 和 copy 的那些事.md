@@ -1,11 +1,11 @@
 ---
 layout: post
-title: 隐私政策
+title: OC 属性 strong 和 copy 的那些事
 categories: iOS
-tags: app
+tags: Objective-C
 ---
 
-一直对 strong 和 copy 不甚了解，今天决定做个小实验。
+一直对 `strong` 和 `copy` 不甚了解，今天决定做个小实验。
 
 #### 先创建四个属性
 
