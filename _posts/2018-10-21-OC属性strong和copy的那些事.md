@@ -1,15 +1,21 @@
 ---
-layout: post
-title: OC 属性 strong 和 copy 的那些事
 categories: iOS
-tags: Objective-C
+layout: post
+tags: 'Objective-C'
+title: OC 属性 strong 和 copy 的那些事
 ---
+
+-   [先创建四个属性](#先创建四个属性)
+-   [然后 `NSLog`](#然后-nslog)
+-   [打印输出](#打印输出)
+-   [分析结果](#分析结果)
+-   [得出结论](#得出结论)
 
 一直对 `strong` 和 `copy` 不甚了解，今天决定做个小实验。
 
 #### 先创建四个属性
 
-```objective-c
+``` {.objectivec}
 @property (nonatomic, strong) NSArray *arrStrong;
 @property (nonatomic, copy) NSArray *arrCopy;
 @property (nonatomic, strong) NSMutableArray *mArrStrong;
@@ -18,7 +24,7 @@ tags: Objective-C
 
 #### 然后 `NSLog`
 
-```objective-c
+``` {.objectivec}
     NSLog(@" ==== start ====");
     
     NSLog(@"内存地址 = %p, retainCount = %li, 值 = %@, === tempArr", tempArr, CFGetRetainCount((__bridge CFTypeRef)tempArr), [tempArr componentsJoinedByString:@","]);
@@ -108,7 +114,7 @@ tags: Objective-C
 
 #### 打印输出
 
-```shell
+``` {.shell}
  ==== start ====
 内存地址 = 0x6000038bb680, retainCount = 1, 值 = temp arr, === tempArr
 内存地址 = 0x6000034d9260, retainCount = 1, 值 = temp mutable arr, === tempMutableArr
@@ -179,15 +185,25 @@ tags: Objective-C
 
 #### 分析结果
 
-|   | NSArray retainCount = 1|  NSMutableArray retainCount = 1|
-| :----- | ------ | ------ |
-| NSArray strong | 地址不变 retainCount = 2 | 地址不变，retainCount = 2，操作原地址数据会改变当前值 |
-| NSArray copy | 地址不变 retainCount = 2 | 地址变化，retainCount = 1 |
-| NSMutableArray strong | 地址不变 retainCount = 2，此时操作属性会 crash | 地址不变，retainCount = 2 |
-| NSMutableArray copy | 地址不变 retainCount = 2，此时操作属性会 crash | 地址变化，retainCount = 1，操作属性 crash |
+  -------------------------------------------------------------------------------
+                          NSArray retainCount = 1 NSMutableArray retainCount = 1
+  ----------------------- ----------------------- -------------------------------
+  NSArray strong          地址不变 retainCount =  地址不变，retainCount =
+                          2                       2，操作原地址数据会改变当前值
+
+  NSArray copy            地址不变 retainCount =  地址变化，retainCount = 1
+                          2                       
+
+  NSMutableArray strong   地址不变 retainCount =  地址不变，retainCount = 2
+                          2，此时操作属性会 crash 
+
+  NSMutableArray copy     地址不变 retainCount =  地址变化，retainCount =
+                          2，此时操作属性会 crash 1，操作属性 crash
+  -------------------------------------------------------------------------------
 
 #### 得出结论
 
-- `NSArray` 最好使用 `copy` 修饰
-- `NSMutableArray` 最好用 `strong` 修饰
-- 给 `NSMutableArray` 赋 `NSArray` 值需要使用 `[NSMutableArray arrayWithArray:tempArr]` 方式
+-   `NSArray` 最好使用 `copy` 修饰
+-   `NSMutableArray` 最好用 `strong` 修饰
+-   给 `NSMutableArray` 赋 `NSArray` 值需要使用
+    `[NSMutableArray arrayWithArray:tempArr]` 方式
