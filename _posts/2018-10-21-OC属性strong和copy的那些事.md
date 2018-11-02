@@ -185,8 +185,8 @@ title: OC 属性 strong 和 copy 的那些事
 
 #### 分析结果
 
-|   | NSArray retainCount = 1|  NSMutableArray retainCount = 1|
-| :----- | ------ | ------ |
+|| NSArray retainCount = 1|  NSMutableArray retainCount = 1|
+| ----- | ------ | ------ |
 | NSArray strong | 地址不变 retainCount = 2 | 地址不变，retainCount = 2，操作原地址数据会改变当前值 |
 | NSArray copy | 地址不变 retainCount = 2 | 地址变化，retainCount = 1 |
 | NSMutableArray strong | 地址不变 retainCount = 2，此时操作属性会 crash | 地址不变，retainCount = 2 |
