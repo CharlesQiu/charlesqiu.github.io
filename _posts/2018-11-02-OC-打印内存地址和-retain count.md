@@ -7,12 +7,12 @@ categories: iOS
 
 #### 打印指针所指向对象的地址
 
-​	NSLog(@"aStr指针所指向对象的地址：%p",aStr);
+​	`NSLog(@"aStr指针所指向对象的地址：%p",aStr);`
 
 #### 打印指针的地址
 
-​	NSLog(@"aStr指针内存地址：%x",&aStr);
+​	`NSLog(@"aStr指针内存地址：%x",&aStr);`
 
 #### 打印 retain count
 
-​	CFGetRetainCount((__bridge CFTypeRef)self 
+​	`CFGetRetainCount((__bridge CFTypeRef)self` 
