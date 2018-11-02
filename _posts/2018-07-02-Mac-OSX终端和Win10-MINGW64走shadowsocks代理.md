@@ -5,8 +5,11 @@ tags: OSX
 title: Mac OSX 终端和 Win10 MINGW64 走shadowsocks代理
 ---
 
+-   [shadowsocks 设置](#shadowsocks-设置)
 -   [proxychains-ng](#proxychains-ng)
 -   [MINGW64(Windows)中使用](#mingw64windows中使用)
+
+### shadowsocks 设置
 
 `shadowsocks`设置为：
 

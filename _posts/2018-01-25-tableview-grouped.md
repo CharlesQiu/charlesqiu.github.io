@@ -7,8 +7,6 @@ title: 隐藏 GroupedTableView 上边多余的间隔
 
 -   [**UITableViewHeader 的一些研究：**](#uitableviewheader-的一些研究)
 
--   [**UITableViewHeader 的一些研究：**](#uitableviewheader-的一些研究)
-
 当设置 UITableview 的 Style 为 Grouped 时，会出现下面这种情况：
 
 ![001](/assets/images/2018/20180125_001.jpeg)

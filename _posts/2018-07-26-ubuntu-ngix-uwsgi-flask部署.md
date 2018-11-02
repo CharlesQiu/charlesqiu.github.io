@@ -13,13 +13,6 @@ title: 'ubuntu-ngix-uwsgi-flask部署'
 -   [问题解决](#问题解决)
 -   [托管多个应用](#托管多个应用)
 
--   [Flask](#flask)
--   [Nginx](#nginx)
--   [uWSGI](#uwsgi)
--   [uWSGI Emperor(Ubuntu
-    16.04之前版本)](#uwsgi-emperorubuntu-16.04之前版本)
--   [问题解决](#问题解决)
--   [托管多个应用](#托管多个应用)
 
 ### Flask
 
@@ -80,7 +73,7 @@ title: 'ubuntu-ngix-uwsgi-flask部署'
         server_name localhost;
         charset     utf-8;
         client_max_body_size 75M;
-
+    
         location / { try_files $uri @yourapplication; }
         location @yourapplication {
             include uwsgi_params;
@@ -109,9 +102,9 @@ gateway"错误，让我们马上修正它吧。
 1.  创建一个新的uWSGI配置文件**/var/www/zlktapp/zlktapp\_uwsgi.ini**：
 
 <!-- -->
-     [uwsgi]
-     #application's base folder
-     base = /var/www/zlktapp/zlktqa
+​     [uwsgi]
+​     #application's base folder
+​     base = /var/www/zlktapp/zlktqa
 
      #python module to import
      app = zlktqa
